@@ -1,7 +1,18 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 
 function Home() {
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    // Check if user is logged in
+    const storedUser = localStorage.getItem('user')
+    if (storedUser) {
+      setUser(JSON.parse(storedUser))
+    }
+  }, [])
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -46,12 +57,21 @@ function Home() {
               transition={{ delay: 0.6 }}
               className="flex flex-wrap gap-4"
             >
-              <Link 
-                to="/chat"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all"
-              >
-                Start Chat Now
-              </Link>
+              {user ? (
+                <Link 
+                  to="/chat"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all"
+                >
+                  Start Chat Now
+                </Link>
+              ) : (
+                <Link 
+                  to="/login"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all"
+                >
+                  Login to Chat
+                </Link>
+              )}
               <a 
                 href="#features"
                 className="bg-white/20 backdrop-blur-sm text-white px-8 py-4 rounded-full font-semibold hover:bg-white/30 transition-all"
@@ -117,12 +137,30 @@ function Home() {
             viewport={{ once: true }}
           >
             <h2 className="text-4xl font-bold text-white mb-8">Ready to Get Started?</h2>
-            <Link 
-              to="/chat"
-              className="inline-block bg-white text-blue-600 px-8 py-4 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all"
-            >
-              Chat with AI Assistant
-            </Link>
+            {user ? (
+              <Link 
+                to="/chat"
+                className="inline-block bg-white text-blue-600 px-8 py-4 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all"
+              >
+                Chat with AI Assistant
+              </Link>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-white text-xl mb-4">Sign in to access our AI healthcare assistant</p>
+                <Link 
+                  to="/login"
+                  className="inline-block bg-white text-blue-600 px-8 py-4 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all mr-4"
+                >
+                  Sign In
+                </Link>
+                <Link 
+                  to="/register"
+                  className="inline-block bg-blue-900 text-white px-8 py-4 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all"
+                >
+                  Create Account
+                </Link>
+              </div>
+            )}
           </motion.div>
         </div>
       </section>

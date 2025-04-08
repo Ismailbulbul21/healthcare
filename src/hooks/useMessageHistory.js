@@ -1,14 +1,41 @@
 import { useState, useEffect } from 'react'
 
-export function useMessageHistory(initialMessages) {
-    const [messages, setMessages] = useState(() => {
-        const saved = localStorage.getItem('chatHistory')
-        return saved ? JSON.parse(saved) : initialMessages
-    })
+export function useMessageHistory(initialMessages = []) {
+    const [messages, setMessages] = useState(initialMessages)
+    const [userId, setUserId] = useState(null)
 
+    // Load user ID and their messages when component mounts
     useEffect(() => {
-        localStorage.setItem('chatHistory', JSON.stringify(messages))
-    }, [messages])
+        const storedUser = localStorage.getItem('user')
+        if (storedUser) {
+            const userData = JSON.parse(storedUser)
+            setUserId(userData.uid)
 
-    return [messages, setMessages]
+            // Load user-specific messages from localStorage
+            const userMessages = localStorage.getItem(`chat_messages_${userData.uid}`)
+            if (userMessages) {
+                setMessages(JSON.parse(userMessages))
+            }
+        }
+    }, [])
+
+    // Custom setter that updates both state and localStorage
+    const updateMessages = (newMessages) => {
+        if (typeof newMessages === 'function') {
+            setMessages(prevMessages => {
+                const updatedMessages = newMessages(prevMessages)
+                if (userId) {
+                    localStorage.setItem(`chat_messages_${userId}`, JSON.stringify(updatedMessages))
+                }
+                return updatedMessages
+            })
+        } else {
+            setMessages(newMessages)
+            if (userId) {
+                localStorage.setItem(`chat_messages_${userId}`, JSON.stringify(newMessages))
+            }
+        }
+    }
+
+    return [messages, updateMessages]
 } 

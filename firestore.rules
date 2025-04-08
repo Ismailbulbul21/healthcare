@@ -1,0 +1,17 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow anyone to read doctors collection
+    match /doctors/{doctorId} {
+      allow read: if true;
+      allow write: if false;  // No writing to doctors collection
+    }
+    
+    // Allow authenticated users to read and write their own appointments
+    match /appointments/{appointmentId} {
+      allow read: if true;  // Allow reading for availability checks
+      allow create: if true;  // Allow creating appointments without authentication for now
+      allow update, delete: if true;  // Allow updating/deleting appointments without authentication for now
+    }
+  }
+} 
