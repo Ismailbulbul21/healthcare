@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { loginUser } from '../services/firebase'
+import { loginUser } from '../services/supabase'
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -23,21 +23,17 @@ function Login() {
       const user = await loginUser(email, password)
       // Store user info in localStorage for protected routes
       localStorage.setItem('user', JSON.stringify({
-        uid: user.uid,
+        uid: user.id,
         email: user.email,
-        displayName: user.displayName
+        displayName: user.user_metadata?.full_name || ''
       }))
       navigate(from)
     } catch (error) {
       console.error('Login error:', error)
       setError(
-        error.code === 'auth/user-not-found'
-          ? 'No account found with this email'
-          : error.code === 'auth/wrong-password'
-          ? 'Incorrect password'
-          : error.code === 'auth/invalid-credential'
+        error.message === 'Invalid login credentials'
           ? 'Invalid email or password'
-          : 'An error occurred during login. Please try again.'
+          : error.message || 'An error occurred during login. Please try again.'
       )
     } finally {
       setLoading(false)

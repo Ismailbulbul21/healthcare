@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { registerUser } from '../services/firebase'
+import { registerUser } from '../services/supabase'
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -42,7 +42,7 @@ function Register() {
       const user = await registerUser(formData.email, formData.password, formData.fullName)
       // Store user info in localStorage for protected routes
       localStorage.setItem('user', JSON.stringify({
-        uid: user.uid,
+        uid: user.id,
         email: user.email,
         displayName: formData.fullName
       }))
@@ -52,13 +52,11 @@ function Register() {
     } catch (error) {
       console.error('Registration error:', error)
       setError(
-        error.code === 'auth/email-already-in-use'
+        error.message?.includes('Email already registered')
           ? 'An account with this email already exists'
-          : error.code === 'auth/invalid-email'
-          ? 'Invalid email address'
-          : error.code === 'auth/weak-password'
-          ? 'Password is too weak'
-          : 'An error occurred during registration. Please try again.'
+          : error.message?.includes('password')
+          ? error.message
+          : error.message || 'An error occurred during registration. Please try again.'
       )
     } finally {
       setLoading(false)

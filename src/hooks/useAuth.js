@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext, useContext } from 'react'
-import { onAuthChange, getCurrentUser } from '../services/firebase'
+import { onAuthChange, getCurrentUser } from '../services/supabase'
 
 // Create the authentication context
 const AuthContext = createContext()
@@ -10,23 +10,61 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        // Subscribe to auth state changes
-        const unsubscribe = onAuthChange((authUser) => {
-            if (authUser) {
-                setUser({
-                    uid: authUser.uid,
-                    email: authUser.email,
-                    displayName: authUser.displayName,
-                    photoURL: authUser.photoURL
-                })
-            } else {
+        // Get current user on mount
+        const loadUser = async () => {
+            try {
+                const currentUser = await getCurrentUser()
+                if (currentUser) {
+                    setUser({
+                        uid: currentUser.id,
+                        email: currentUser.email,
+                        displayName: currentUser.user_metadata?.full_name || '',
+                        photoURL: currentUser.user_metadata?.avatar_url || ''
+                    })
+                } else {
+                    setUser(null)
+                }
+            } catch (error) {
+                console.error('Error loading user:', error)
                 setUser(null)
+            } finally {
+                setLoading(false)
             }
+        }
+        
+        loadUser()
+
+        // Subscribe to auth state changes
+        let unsubscribeFn = null
+        try {
+            unsubscribeFn = onAuthChange((authUser) => {
+                if (authUser) {
+                    setUser({
+                        uid: authUser.id,
+                        email: authUser.email,
+                        displayName: authUser.user_metadata?.full_name || '',
+                        photoURL: authUser.user_metadata?.avatar_url || ''
+                    })
+                } else {
+                    setUser(null)
+                }
+                setLoading(false)
+            })
+        } catch (error) {
+            console.error('Error setting up auth subscription:', error)
             setLoading(false)
-        })
+        }
 
         // Cleanup subscription
-        return () => unsubscribe()
+        return () => {
+            if (typeof unsubscribeFn === 'function') {
+                try {
+                    unsubscribeFn()
+                } catch (error) {
+                    console.error('Error unsubscribing from auth changes:', error)
+                }
+            }
+        }
     }, [])
 
     const value = {

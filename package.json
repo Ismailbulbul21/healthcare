@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
+    "@supabase/supabase-js": "^2.49.4",
     "@tailwindcss/vite": "^4.0.8",
     "axios": "^1.7.9",
     "dotenv": "^16.4.7",

@@ -7,6 +7,8 @@ import About from './pages/About'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import Profile from './pages/Profile'
+import AppointmentBooking from './pages/AppointmentBooking'
+import MyAppointments from './pages/MyAppointments'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AuthProvider } from './hooks/useAuth'
 
@@ -35,6 +37,16 @@ function App() {
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/appointments" element={
+                <ProtectedRoute>
+                  <AppointmentBooking />
+                </ProtectedRoute>
+              } />
+              <Route path="/appointments/my" element={
+                <ProtectedRoute>
+                  <MyAppointments />
                 </ProtectedRoute>
               } />
             </Routes>

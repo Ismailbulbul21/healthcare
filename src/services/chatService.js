@@ -3,7 +3,7 @@ import axios from 'axios'
 // We're using OpenRouter.ai API directly
 const API_URL = 'https://openrouter.ai/api/v1/chat/completions'
 // Hardcoded API key - in production, should be in environment variables
-const API_KEY = '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'
+const API_KEY = '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'
 
 // Function to detect if text is likely in Somali language
 const isSomaliLanguage = (text) => {
@@ -59,7 +59,7 @@ export const generateResponse = async (input) => {
         }
 
         const payload = {
-            model: 'google/gemini-pro:latest',
+            model: 'deepseek/deepseek-chat-v3-0324:free',
             messages: [
                 {
                     role: 'system',

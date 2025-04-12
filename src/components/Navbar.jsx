@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-import { logoutUser } from '../services/firebase'
+import { logoutUser } from '../services/supabase'
 
 function Navbar() {
   const navigate = useNavigate()
@@ -54,6 +54,7 @@ function Navbar() {
           <div className="hidden md:flex items-center space-x-6">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/chat">AI Chat</NavLink>
+            <NavLink to="/appointments">Appointments</NavLink>
             <NavLink to="/about">About</NavLink>
             
             {user ? (
@@ -93,6 +94,13 @@ function Navbar() {
                       onClick={() => setShowUserMenu(false)}
                     >
                       Your Profile
+                    </Link>
+                    <Link
+                      to="/appointments/my"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowUserMenu(false)}
+                    >
+                      My Appointments
                     </Link>
                     <button
                       onClick={handleLogout}
@@ -150,6 +158,7 @@ function Navbar() {
         <div className="px-4 pt-2 pb-3 space-y-1">
           <MobileNavLink to="/" onClick={() => setIsOpen(false)}>Home</MobileNavLink>
           <MobileNavLink to="/chat" onClick={() => setIsOpen(false)}>AI Chat</MobileNavLink>
+          <MobileNavLink to="/appointments" onClick={() => setIsOpen(false)}>Appointments</MobileNavLink>
           <MobileNavLink to="/about" onClick={() => setIsOpen(false)}>About</MobileNavLink>
           
           {user ? (
@@ -163,6 +172,7 @@ function Navbar() {
                 </div>
               </div>
               <MobileNavLink to="/profile" onClick={() => setIsOpen(false)}>Your Profile</MobileNavLink>
+              <MobileNavLink to="/appointments/my" onClick={() => setIsOpen(false)}>My Appointments</MobileNavLink>
               <button
                 onClick={() => {
                   handleLogout()
